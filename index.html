@@ -55,14 +55,14 @@
 
       // Calcular o total com honorários para economia de 15%
       var totalComHonorarios15 = parseFloat(economia15);
-      var honorarios15 = (totalComHonorarios15 * honorariosPercentual) / (1 + honorariosPercentual); // Honorários ajustados
+      var honorarios15 = (totalComHonorarios15 * honorariosPercentual); // Honorários ajustados
       var totalAjustado15 = totalComHonorarios15 - honorarios15; // Total sem honorários
       var novoDanoMaterial15 = danoMaterial;
       var novoDanoMoral15 = Math.max(0, totalAjustado15 - novoDanoMaterial15).toFixed(2);
 
       // Calcular os novos valores de dano material e dano moral ajustado para economia de 10%
       var totalComHonorarios10 = parseFloat(economia10);
-      var honorarios10 = (totalComHonorarios10 * honorariosPercentual) / (1 + honorariosPercentual); // Honorários ajustados
+      var honorarios10 = (totalComHonorarios10 * honorariosPercentual); // Honorários ajustados
       var totalAjustado10 = totalComHonorarios10 - honorarios10; // Total sem honorários
       var novoDanoMaterial10 = danoMaterial;
       var novoDanoMoral10 = Math.max(0, totalAjustado10 - novoDanoMaterial10).toFixed(2);
@@ -84,16 +84,15 @@
       resultado += "------------------------------------------------------------------\n";
 
       if (valorCondenacao > 3000 && modalidade.includes("Parcelado")) {
-        var valorParcela = (valorCondenacao / parcelas).toFixed(2);
+        var totalSemEconomia = valorCondenacao; // Considerar o valor da condenação
+        var honorariosSemEconomia = (totalSemEconomia * honorariosPercentual).toFixed(2); // Calcular honorários com base na condenação
+        var totalParcelado = (totalSemEconomia + parseFloat(honorariosSemEconomia)).toFixed(2); // Total a ser parcelado
+        var valorParcela = (totalParcelado / parcelas).toFixed(2); // Valor da parcela
+        
         resultado += "VALOR DO ACORDO, CASO NÃO TENHA ECONOMIA - PARCELAMENTO EM " + parcelas + " VEZES DE R$ " + formatarValor(valorParcela) + ":\n";
         resultado += "DANO MORAL: R$ " + formatarValor(danoMoral) + "\n";
         resultado += "DANO MATERIAL: R$ " + formatarValor(danoMaterial) + "\n";
-        
-        // Calcular honorários para o caso sem economia
-        var totalSemEconomia = (danoMoral + danoMaterial);
-        var honorariosSemEconomia = (totalSemEconomia * honorariosPercentual).toFixed(2);
-        
-        resultado += "HONORÁRIOS: R$ " + formatarValor(honorariosSemEconomia) + "\n"; // Soma dos danos sem economia
+        resultado += "HONORÁRIOS: R$ " + formatarValor(honorariosSemEconomia) + "\n"; // Honorários totais calculados
         resultado += "20 DIAS ÚTEIS PARA PAGAMENTO.\n";
         resultado += "------------------------------------------------------------------\n";
       }
@@ -175,8 +174,3 @@
   <pre id="resultadoTexto"></pre>
 </body>
 </html>
-
-</html>
-
-
-
