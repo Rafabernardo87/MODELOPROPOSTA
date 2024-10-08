@@ -6,7 +6,6 @@
   <title>MODELO DE ENCAMINHAMENTO DA PROPOSTA</title>
 
   <style>
-    /* Definindo a fonte Aptos Corpos */
     body {
       font-family: 'Aptos Corpos', sans-serif;
     }
@@ -17,10 +16,12 @@
     function gerarProposta() {
       var numeroProcesso = document.getElementById("numeroProcesso").value;
       var valorCondenacao = parseFloat(document.getElementById("valorCondenacao").value);
+      var danoMoral = parseFloat(document.getElementById("danoMoral").value);
+      var danoMaterial = parseFloat(document.getElementById("danoMaterial").value);
       
       // Verificar se os campos obrigatórios foram preenchidos
-      if (numeroProcesso === "" || isNaN(valorCondenacao)) {
-        alert("Preencha o número do processo e o valor total da condenação corretamente.");
+      if (numeroProcesso === "" || isNaN(valorCondenacao) || isNaN(danoMoral) || isNaN(danoMaterial)) {
+        alert("Preencha corretamente todos os campos.");
         return;
       }
 
@@ -45,31 +46,33 @@
       // Calcular as economias de 15% e 10%
       var economia15 = (valorCondenacao * 0.85).toFixed(2);
       var economia10 = (valorCondenacao * 0.90).toFixed(2);
-      var condicoesAcordo = "";
 
-      condicoesAcordo += "• Valor proposto com economia de 15%: R$ " + economia15 + "\n";
-      condicoesAcordo += "• Caso não seja aceito, será oferecido novo valor com economia de 10%: R$ " + economia10 + "\n";
+      // Calcular os valores finais
+      var valorDanoMoral15 = Math.max(0, (economia15 - danoMaterial)).toFixed(2);
+      var valorDanoMoral10 = Math.max(0, (economia10 - danoMaterial)).toFixed(2);
+
+      // Gerar o resultado com o formato solicitado
+      var resultado = "";
+
+      resultado += "VALOR DO ACORDO COM ECONOMIA 15%: R$ " + economia15 + "\n";
+      resultado += "DANO MORAL: R$ " + valorDanoMoral15 + "\n";
+      resultado += "DANO MATERIAL: R$ " + danoMaterial + "\n";
+      resultado += "20 DIAS ÚTEIS PARA PAGAMENTO.\n";
+      resultado += "------------------------------------------------------------------\n";
+      resultado += "VALOR DO ACORDO COM ECONOMIA 10%: R$ " + economia10 + "\n";
+      resultado += "DANO MORAL: R$ " + valorDanoMoral10 + "\n";
+      resultado += "DANO MATERIAL: R$ " + danoMaterial + "\n";
+      resultado += "20 DIAS ÚTEIS PARA PAGAMENTO.\n";
+      resultado += "------------------------------------------------------------------\n";
 
       if (valorCondenacao > 3000 && modalidade.includes("Parcelado")) {
-        condicoesAcordo += "• Parcelar em " + parcelas + "x\n";
+        var valorParcela = (valorCondenacao / parcelas).toFixed(2);
+        resultado += "VALOR DO ACORDO, CASO NÃO TENHA ECONOMIA - PARCELAMENTO EM " + parcelas + " VEZES DE R$ " + valorParcela + ":\n";
+        resultado += "DANO MORAL: R$ " + danoMoral + "\n";
+        resultado += "DANO MATERIAL: R$ " + danoMaterial + "\n";
+        resultado += "20 DIAS ÚTEIS PARA PAGAMENTO.\n";
+        resultado += "------------------------------------------------------------------\n";
       }
-
-      // Selecionar a forma de pagamento
-      var formaPagamento = document.querySelector('input[name="formaPagamento"]:checked');
-      if (!formaPagamento) {
-        alert("Selecione a forma de pagamento.");
-        return;
-      }
-      formaPagamento = formaPagamento.value;
-
-      // Gerar o resultado final
-      var resultado = "Conforme as diretrizes estabelecidas na Política de Acordo Pós-Sentença, encaminhamos a seguir a proposta de acordo referente ao processo n.º " + numeroProcesso + ", cujo valor total da condenação é de R$ " + valorCondenacao + ":\n\n" +
-        "1. Valor da Condenação: R$ " + valorCondenacao + "\n" +
-        "2. Modalidade de Acordo Proposta: " + modalidade + "\n\n" +
-        "3. Condições do acordo:\n" + condicoesAcordo +
-        "Observação: Caso a parte não aceite o parcelamento, é necessária uma economia mínima de 10%.\n\n" +
-        "• Prazo para Resposta: 24 horas\n\n" +
-        "Forma de Pagamento: " + formaPagamento;
 
       // Exibir o resultado na página
       document.getElementById("resultadoTexto").innerText = resultado;
@@ -91,9 +94,10 @@
     function resetarFormulario() {
       document.getElementById("numeroProcesso").value = "";
       document.getElementById("valorCondenacao").value = "";
+      document.getElementById("danoMoral").value = "";
+      document.getElementById("danoMaterial").value = "";
       document.getElementById("parcelas").value = "";
       document.querySelector('input[name="modalidade"]:checked').checked = false;
-      document.querySelector('input[name="formaPagamento"]:checked').checked = false;
       document.getElementById("resultadoTexto").innerText = "";
       exibirParcelas();
     }
@@ -128,6 +132,12 @@
     <label for="valorCondenacao">Valor Total da Condenação (R$):</label>
     <input type="number" id="valorCondenacao" name="valorCondenacao" step="0.01" oninput="exibirParcelas()" required><br><br>
 
+    <label for="danoMoral">Dano Moral (R$):</label>
+    <input type="number" id="danoMoral" name="danoMoral" step="0.01" required><br><br>
+
+    <label for="danoMaterial">Dano Material (R$):</label>
+    <input type="number" id="danoMaterial" name="danoMaterial" step="0.01" required><br><br>
+
     <label>Modalidade de Acordo Proposta:</label><br>
     <input type="radio" id="parcelado" name="modalidade" value="Acordo Parcelado (disponível para valores superiores a R$ 3.001,00)">
     <label for="parcelado">Acordo Parcelado</label><br>
@@ -140,13 +150,6 @@
       <label for="parcelas">Número de Parcelas:</label>
       <input type="number" id="parcelas" name="parcelas" min="1" max="4"><br><br>
     </div>
-
-    <label>Forma de Pagamento:</label><br>
-    <input type="radio" id="avista" name="formaPagamento" value="Pagamento à vista">
-    <label for="avista">Pagamento à vista</label><br>
-
-    <input type="radio" id="parceladoPagamento" name="formaPagamento" value="Pagamento parcelado">
-    <label for="parceladoPagamento">Pagamento parcelado</label><br><br>
 
     <!-- Botão para gerar a proposta -->
     <button type="button" onclick="gerarProposta()">Gerar Proposta</button>
@@ -164,3 +167,4 @@
 
 </body>
 </html>
+
