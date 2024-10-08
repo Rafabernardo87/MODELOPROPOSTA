@@ -18,9 +18,10 @@
       var valorCondenacao = parseFloat(document.getElementById("valorCondenacao").value);
       var danoMoral = parseFloat(document.getElementById("danoMoral").value);
       var danoMaterial = parseFloat(document.getElementById("danoMaterial").value);
+      var honorariosPercentual = parseFloat(document.getElementById("honorarios").value) / 100; // Honorários em percentual
       
       // Verificar se os campos obrigatórios foram preenchidos
-      if (numeroProcesso === "" || isNaN(valorCondenacao) || isNaN(danoMoral) || isNaN(danoMaterial)) {
+      if (numeroProcesso === "" || isNaN(valorCondenacao) || isNaN(danoMoral) || isNaN(danoMaterial) || isNaN(honorariosPercentual)) {
         alert("Preencha corretamente todos os campos.");
         return;
       }
@@ -51,17 +52,24 @@
       var valorDanoMoral15 = Math.max(0, (economia15 - danoMaterial)).toFixed(2);
       var valorDanoMoral10 = Math.max(0, (economia10 - danoMaterial)).toFixed(2);
 
+      // Calcular honorários
+      var honorarios15 = (economia15 * honorariosPercentual).toFixed(2);
+      var honorarios10 = (economia10 * honorariosPercentual).toFixed(2);
+      var honorariosSemEconomia = (valorCondenacao * honorariosPercentual).toFixed(2);
+
       // Gerar o resultado com o formato solicitado
       var resultado = "";
 
       resultado += "VALOR DO ACORDO COM ECONOMIA 15%: R$ " + economia15 + "\n";
       resultado += "DANO MORAL: R$ " + valorDanoMoral15 + "\n";
       resultado += "DANO MATERIAL: R$ " + danoMaterial + "\n";
+      resultado += "HONORÁRIOS: R$ " + honorarios15 + "\n";
       resultado += "20 DIAS ÚTEIS PARA PAGAMENTO.\n";
       resultado += "------------------------------------------------------------------\n";
       resultado += "VALOR DO ACORDO COM ECONOMIA 10%: R$ " + economia10 + "\n";
       resultado += "DANO MORAL: R$ " + valorDanoMoral10 + "\n";
       resultado += "DANO MATERIAL: R$ " + danoMaterial + "\n";
+      resultado += "HONORÁRIOS: R$ " + honorarios10 + "\n";
       resultado += "20 DIAS ÚTEIS PARA PAGAMENTO.\n";
       resultado += "------------------------------------------------------------------\n";
 
@@ -70,6 +78,7 @@
         resultado += "VALOR DO ACORDO, CASO NÃO TENHA ECONOMIA - PARCELAMENTO EM " + parcelas + " VEZES DE R$ " + valorParcela + ":\n";
         resultado += "DANO MORAL: R$ " + danoMoral + "\n";
         resultado += "DANO MATERIAL: R$ " + danoMaterial + "\n";
+        resultado += "HONORÁRIOS: R$ " + honorariosSemEconomia + "\n";
         resultado += "20 DIAS ÚTEIS PARA PAGAMENTO.\n";
         resultado += "------------------------------------------------------------------\n";
       }
@@ -96,6 +105,7 @@
       document.getElementById("valorCondenacao").value = "";
       document.getElementById("danoMoral").value = "";
       document.getElementById("danoMaterial").value = "";
+      document.getElementById("honorarios").value = "";
       document.getElementById("parcelas").value = "";
       document.querySelector('input[name="modalidade"]:checked').checked = false;
       document.getElementById("resultadoTexto").innerText = "";
@@ -138,6 +148,9 @@
     <label for="danoMaterial">Dano Material (R$):</label>
     <input type="number" id="danoMaterial" name="danoMaterial" step="0.01" required><br><br>
 
+    <label for="honorarios">Percentual de Honorários (%):</label>
+    <input type="number" id="honorarios" name="honorarios" step="0.01" required><br><br>
+
     <label>Modalidade de Acordo Proposta:</label><br>
     <input type="radio" id="parcelado" name="modalidade" value="Acordo Parcelado (disponível para valores superiores a R$ 3.001,00)">
     <label for="parcelado">Acordo Parcelado</label><br>
@@ -167,4 +180,6 @@
 
 </body>
 </html>
+
+
 
