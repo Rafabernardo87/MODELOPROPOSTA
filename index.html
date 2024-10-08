@@ -12,14 +12,19 @@
   </style>
 
   <script>
+    // Função para formatar os valores
+    function formatarValor(valor) {
+      return valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
     // Função para gerar a proposta
     function gerarProposta() {
       var numeroProcesso = document.getElementById("numeroProcesso").value;
-      var valorCondenacao = parseFloat(document.getElementById("valorCondenacao").value);
-      var danoMoral = parseFloat(document.getElementById("danoMoral").value);
-      var danoMaterial = parseFloat(document.getElementById("danoMaterial").value);
-      var honorariosPercentual = parseFloat(document.getElementById("honorarios").value) / 100; // Honorários em percentual
-      
+      var valorCondenacao = parseFloat(document.getElementById("valorCondenacao").value.replace(".", "").replace(",", "."));
+      var danoMoral = parseFloat(document.getElementById("danoMoral").value.replace(".", "").replace(",", "."));
+      var danoMaterial = parseFloat(document.getElementById("danoMaterial").value.replace(".", "").replace(",", "."));
+      var honorariosPercentual = parseFloat(document.getElementById("honorarios").value.replace(".", "").replace(",", ".")) / 100; // Honorários em percentual
+
       // Verificar se os campos obrigatórios foram preenchidos
       if (numeroProcesso === "" || isNaN(valorCondenacao) || isNaN(danoMoral) || isNaN(danoMaterial) || isNaN(honorariosPercentual)) {
         alert("Preencha corretamente todos os campos.");
@@ -60,25 +65,25 @@
       // Gerar o resultado com o formato solicitado
       var resultado = "";
 
-      resultado += "VALOR DO ACORDO COM ECONOMIA 15%: R$ " + economia15 + "\n";
-      resultado += "DANO MORAL: R$ " + valorDanoMoral15 + "\n";
-      resultado += "DANO MATERIAL: R$ " + danoMaterial + "\n";
-      resultado += "HONORÁRIOS: R$ " + honorarios15 + "\n";
+      resultado += "VALOR DO ACORDO COM ECONOMIA 15%: R$ " + formatarValor(economia15) + "\n";
+      resultado += "DANO MORAL: R$ " + formatarValor(valorDanoMoral15) + "\n";
+      resultado += "DANO MATERIAL: R$ " + formatarValor(danoMaterial) + "\n";
+      resultado += "HONORÁRIOS: R$ " + formatarValor(honorarios15) + "\n";
       resultado += "20 DIAS ÚTEIS PARA PAGAMENTO.\n";
       resultado += "------------------------------------------------------------------\n";
-      resultado += "VALOR DO ACORDO COM ECONOMIA 10%: R$ " + economia10 + "\n";
-      resultado += "DANO MORAL: R$ " + valorDanoMoral10 + "\n";
-      resultado += "DANO MATERIAL: R$ " + danoMaterial + "\n";
-      resultado += "HONORÁRIOS: R$ " + honorarios10 + "\n";
+      resultado += "VALOR DO ACORDO COM ECONOMIA 10%: R$ " + formatarValor(economia10) + "\n";
+      resultado += "DANO MORAL: R$ " + formatarValor(valorDanoMoral10) + "\n";
+      resultado += "DANO MATERIAL: R$ " + formatarValor(danoMaterial) + "\n";
+      resultado += "HONORÁRIOS: R$ " + formatarValor(honorarios10) + "\n";
       resultado += "20 DIAS ÚTEIS PARA PAGAMENTO.\n";
       resultado += "------------------------------------------------------------------\n";
 
       if (valorCondenacao > 3000 && modalidade.includes("Parcelado")) {
         var valorParcela = (valorCondenacao / parcelas).toFixed(2);
-        resultado += "VALOR DO ACORDO, CASO NÃO TENHA ECONOMIA - PARCELAMENTO EM " + parcelas + " VEZES DE R$ " + valorParcela + ":\n";
-        resultado += "DANO MORAL: R$ " + danoMoral + "\n";
-        resultado += "DANO MATERIAL: R$ " + danoMaterial + "\n";
-        resultado += "HONORÁRIOS: R$ " + honorariosSemEconomia + "\n";
+        resultado += "VALOR DO ACORDO, CASO NÃO TENHA ECONOMIA - PARCELAMENTO EM " + parcelas + " VEZES DE R$ " + formatarValor(valorParcela) + ":\n";
+        resultado += "DANO MORAL: R$ " + formatarValor(danoMoral) + "\n";
+        resultado += "DANO MATERIAL: R$ " + formatarValor(danoMaterial) + "\n";
+        resultado += "HONORÁRIOS: R$ " + formatarValor(honorariosSemEconomia) + "\n";
         resultado += "20 DIAS ÚTEIS PARA PAGAMENTO.\n";
         resultado += "------------------------------------------------------------------\n";
       }
@@ -89,7 +94,7 @@
 
     // Função para exibir o campo de parcelas apenas se o valor da condenação for superior a R$ 3.000
     function exibirParcelas() {
-      var valorCondenacao = parseFloat(document.getElementById("valorCondenacao").value);
+      var valorCondenacao = parseFloat(document.getElementById("valorCondenacao").value.replace(".", "").replace(",", "."));
       var parcelasDiv = document.getElementById("parcelasDiv");
 
       if (valorCondenacao > 3000) {
@@ -140,13 +145,13 @@
     <input type="text" id="numeroProcesso" name="numeroProcesso" required><br><br>
 
     <label for="valorCondenacao">Valor Total da Condenação (R$):</label>
-    <input type="number" id="valorCondenacao" name="valorCondenacao" step="0.01" oninput="exibirParcelas()" required><br><br>
+    <input type="text" id="valorCondenacao" name="valorCondenacao" placeholder="1.000,00" oninput="exibirParcelas()" required><br><br>
 
     <label for="danoMoral">Dano Moral (R$):</label>
-    <input type="number" id="danoMoral" name="danoMoral" step="0.01" required><br><br>
+    <input type="text" id="danoMoral" name="danoMoral" placeholder="1.000,00" required><br><br>
 
     <label for="danoMaterial">Dano Material (R$):</label>
-    <input type="number" id="danoMaterial" name="danoMaterial" step="0.01" required><br><br>
+    <input type="text" id="danoMaterial" name="danoMaterial" placeholder="1.000,00" required><br><br>
 
     <label for="honorarios">Percentual de Honorários (%):</label>
     <input type="number" id="honorarios" name="honorarios" step="0.01" required><br><br>
